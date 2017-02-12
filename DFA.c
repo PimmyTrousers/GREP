@@ -15,6 +15,7 @@
 int alphabet[128] ;
 int number_of_states;
 int number_of_symbols;
+long input_file_size;
 
 /*
 ------ THE SUBROUTINES BELOW ARE RECOMMENDED ------
@@ -39,6 +40,22 @@ void construct_trans_table();
 
 int create_freq_table(char *word);
 
+int ghetto_grep(char *word, char *trans_table[100][128], char *file_contents){
+
+  int flag = 0;
+  int k ;
+  printf("\"") ;
+
+
+  // work needs to be done in here.
+  for(k=0;k<input_file_size;k++) {
+    if(file_contents[k] == '\n') { printf("\"") ; flag = 1 ; }
+    printf("%c",file_contents[k]) ;
+  }
+  if(flag == 0) { printf("\"") ; }
+  printf("\n") ;
+}
+
 int main(int argc, char *argv[]){
 
   /////////////////////////////////////////////////////////////////////////
@@ -57,7 +74,6 @@ int main(int argc, char *argv[]){
 
   char *file_contents;
   int word_count; // contains the amount of time a word has occured in the string.
-  long input_file_size;
   FILE *input_file = fopen(argv[1], "rb");
   fseek(input_file, 0, SEEK_END); // what is this?
   input_file_size = ftell(input_file);
@@ -77,19 +93,9 @@ int main(int argc, char *argv[]){
 
   char *trans_table[100][128]; // this is the array that will eventually turn into the transition table
   construct_trans_table(word, trans_table);
+  print_trans_table(trans_table);
+  ghetto_grep(word, trans_table, file_contents);
 
-  int flag = 0;
-  int k ;
-  printf("\"") ;
-
-
-  // work needs to be done in here.
-  for(k=0;k<input_file_size;k++) {
-    if(file_contents[k] == '\n') { printf("\"") ; flag = 1 ; }
-    printf("%c",file_contents[k]) ;
-  }
-  if(flag == 0) { printf("\"") ; }
-  printf("\n") ;
 
 
 }
@@ -107,6 +113,12 @@ void print_trans_table(char trans_table[100][128]){
 	int i;
 	int j;
 
+  printf("   ");
+  for (i = 0; i < number_of_symbols; i++){
+    printf("%d ", i);
+  }
+  printf("\n");
+
 	for(i = 0; i < number_of_states; i++){
 		printf("%d| ", i);
 		for(j = 0; j < number_of_symbols; j++){
@@ -115,10 +127,6 @@ void print_trans_table(char trans_table[100][128]){
 		printf("\n");
 	}
 }
-
-// int get_unique_symbol_length(char *word){
-// 	int i;
-// }
 
 void construct_trans_table(char *word, char trans_table[100][128]){
   int i, j, k;
@@ -200,8 +208,6 @@ void construct_trans_table(char *word, char trans_table[100][128]){
     }
   }
 
-  print_trans_table(trans_table);
-
 }
 
 int create_freq_table(char *word){
@@ -227,10 +233,7 @@ int create_freq_table(char *word){
 		if(alphabet[i] != 0){
 			length++;
 		}
-
 	}
 
 	return length;
-
-
 }
