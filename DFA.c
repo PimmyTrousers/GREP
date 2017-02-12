@@ -16,6 +16,8 @@ int alphabet[128] ;
 int number_of_states;
 int number_of_symbols;
 long input_file_size;
+char trans_table[100][128];
+
 
 /*
 ------ THE SUBROUTINES BELOW ARE RECOMMENDED ------
@@ -40,20 +42,66 @@ void construct_trans_table();
 
 int create_freq_table(char *word);
 
-int ghetto_grep(char *word, char *trans_table[100][128], char *file_contents){
+int ghetto_grep(char *word, char *file_contents){
 
   int flag = 0;
-  int k ;
-  printf("\"") ;
+  int k, i;
+  printf("\"");
+  int current_state = 0;
+  int occurances = 0;
+  int accepting_state = number_of_states - 1;
+  int symbols[number_of_symbols+3];
+
+  symbols[0] = 46; // 46 = period.
+  symbols[1] = 44; // 44 = comma.
+  symbols[2] = 32; // 32 = space. 
+
+  int counter = 3;
+
+  for(i = 0; i < 128; i++){
+  	if(alphabet[i] != 0){
+  		symbols[counter] = i;
+  		counter++;
+  	}
+  }
+
+
+
+  int word_length = get_word_length(word);
 
 
   // work needs to be done in here.
-  for(k=0;k<input_file_size;k++) {
-    if(file_contents[k] == '\n') { printf("\"") ; flag = 1 ; }
-    printf("%c",file_contents[k]) ;
+  for(k=0;k<input_file_size;k++){
+ 	printf("Current state is %d\n", current_state);
+   int current_char = file_contents[k];
+   printf("Current char is %d\n", current_char);
+   for(i = 0; i < number_of_symbols; i++){
+   	if(current_char == symbols[i]){
+   		current_state = trans_table[i][current_state];
+   	}
+   	else{
+   		current_state = 1;
+   	}
+   }
+  	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
+  	if(current_state == accepting_state){
+  		occurances++;
+  		current_state = 2;
+  	}
+
+  	// if we reach the end of the file (\n)
+    if(file_contents[k] == '\n'){
+    	printf("\""); 
+    	flag = 1;
+	}
+    printf("%c",file_contents[k]);
   }
-  if(flag == 0) { printf("\"") ; }
-  printf("\n") ;
+  	
+  if(flag == 0){
+   	printf("\""); 
+  }
+  printf("\n");
+  printf("There were a total of %d occurances\n", occurances);
 }
 
 int main(int argc, char *argv[]){
@@ -91,10 +139,9 @@ int main(int argc, char *argv[]){
   printf("states: %d\n", number_of_states);
   printf("symbols: %d\n", number_of_symbols);
 
-  char *trans_table[100][128]; // this is the array that will eventually turn into the transition table
-  construct_trans_table(word, trans_table);
-  print_trans_table(trans_table);
-  ghetto_grep(word, trans_table, file_contents);
+  construct_trans_table(word);
+  print_trans_table();
+  ghetto_grep(word, file_contents);
 
 
 
@@ -109,7 +156,7 @@ int get_word_length(char *word){
 	return i;
 }
 
-void print_trans_table(char trans_table[100][128]){
+void print_trans_table(){
 	int i;
 	int j;
 
@@ -128,7 +175,7 @@ void print_trans_table(char trans_table[100][128]){
 	}
 }
 
-void construct_trans_table(char *word, char trans_table[100][128]){
+void construct_trans_table(char *word){
   int i, j, k;
   int word_length = get_word_length(word);
   int ascii_symbols[number_of_symbols-3], ascii_word[word_length];
