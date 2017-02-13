@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-
+#define KRED  "\x1B[31m"
+#define KNRM  "\x1B[0m"
 /*
      This global variable is recommended to contain the NUMBER of times each
      ascii symbol appears in the text file (i.e. I suggest using it as a
@@ -49,8 +50,9 @@ int ghetto_grep(char *word, char *file_contents){
   printf("\"");
   int current_state = 0;
   int occurances = 0;
-  int accepting_state = number_of_states - 1; // this is correct 
+  int accepting_state = number_of_states - 1; // this is correct
   int symbols[number_of_symbols+3];
+  int last_print_index = 0;
 
   symbols[2] = 46; // 46 = period.
   symbols[1] = 44; // 44 = comma.
@@ -70,7 +72,7 @@ int ghetto_grep(char *word, char *file_contents){
   for(k = 0;k < input_file_size; k++){
    int change_flag = 0;
    int current_char = file_contents[k];
-   
+
    for(i = 0; i < number_of_symbols; i++){
    	if(current_char == symbols[i] || current_char == symbols[i]-32){
    		current_state = trans_table[i][current_state];
@@ -80,30 +82,50 @@ int ghetto_grep(char *word, char *file_contents){
    if(change_flag == 0){
    	current_state = 1;
    }
-  
+
+   // if we reach the end of the file (\n)
+   if(file_contents[k] == '\n'){
+     printf("\"");
+     flag = 1;
+   }
+
+   //fancy print
+   if(current_state == 3){
+     last_print_index = k;
+   }
+   else if(current_state == accepting_state){
+     printf("%s", KRED);
+     for(i = last_print_index; i <= k; i++){
+       printf("%c",file_contents[i]);
+     }
+     printf("%s", KNRM);
+     last_print_index = k+1;
+   }
+   else if(current_state == 0 || current_state == 1 || current_state == 2){
+     for(i = last_print_index; i <= k; i++){
+       printf("%c",file_contents[i]);
+     }
+     last_print_index = k+1;
+   }
+
   	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
   	if(current_state == accepting_state){
   		occurances++;
   		current_state = 2;
   	}
 
-  	// if we reach the end of the file (\n)
-    if(file_contents[k] == '\n'){
-    	printf("\""); 
-    	flag = 1;
-	}
-    printf("%c",file_contents[k]);
+
    }
-  	
+
   if(flag == 0){
-   	printf("\""); 
+   	printf("\"");
   }
   printf("\n");
   printf("There were a total of %d occurances\n", occurances);
 }
 
 int main(int argc, char *argv[]){
-
+  printf("%sred%s\n", KRED, KNRM);
   /////////////////////////////////////////////////////////////////////////
   /*
      Read in a file by it's name and put contents into an array called:
