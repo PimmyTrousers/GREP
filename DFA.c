@@ -52,7 +52,7 @@ int ghetto_grep(char *word, char *file_contents){
   int occurances = 0;
   int accepting_state = number_of_states - 1; // this is correct
   int symbols[number_of_symbols+3];
-  int last_print_index;
+  int last_print_index = 0;
 
   symbols[0] = 46; // 46 = period.
   symbols[1] = 44; // 44 = comma.
@@ -99,9 +99,13 @@ int ghetto_grep(char *word, char *file_contents){
        printf("%c",file_contents[k]);
      }
      printf("%s", KNRM);
+     last_print_index = k;
    }
    else if(current_state == 0 || current_state == 1 || current_state == 2){
-     printf("%c",file_contents[k]);
+     for(i = last_print_index; i <= k; i++){
+       printf("%c",file_contents[k]);
+     }
+     last_print_index = k;
    }
 
   	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
