@@ -96,16 +96,16 @@ int ghetto_grep(char *word, char *file_contents){
    else if(current_state == accepting_state){
      printf("%s", KRED);
      for(i = last_print_index; i <= k; i++){
-       printf("%c",file_contents[k]);
+       printf("%c",file_contents[i]);
      }
      printf("%s", KNRM);
-     last_print_index = k;
+     last_print_index = k+1;
    }
    else if(current_state == 0 || current_state == 1 || current_state == 2){
      for(i = last_print_index; i <= k; i++){
-       printf("%c",file_contents[k]);
+       printf("%c",file_contents[i]);
      }
-     last_print_index = k;
+     last_print_index = k+1;
    }
 
   	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
