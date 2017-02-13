@@ -16,7 +16,7 @@ int alphabet[128] ;
 int number_of_states;
 int number_of_symbols;
 long input_file_size;
-char trans_table[100][128];
+int trans_table[100][128];
 
 
 /*
@@ -49,7 +49,7 @@ int ghetto_grep(char *word, char *file_contents){
   printf("\"");
   int current_state = 0;
   int occurances = 0;
-  int accepting_state = number_of_states - 1;
+  int accepting_state = number_of_states - 1; // this is correct 
   int symbols[number_of_symbols+3];
 
   symbols[0] = 46; // 46 = period.
@@ -65,24 +65,24 @@ int ghetto_grep(char *word, char *file_contents){
   	}
   }
 
-
-
   int word_length = get_word_length(word);
 
-
-  // work needs to be done in here.
-  for(k=0;k<input_file_size;k++){
- 	printf("Current state is %d\n", current_state);
+  for(k = 0;k < input_file_size; k++){
+   int change_flag = 0;
    int current_char = file_contents[k];
-   printf("Current char is %d\n", current_char);
+   
+
    for(i = 0; i < number_of_symbols; i++){
-   	if(current_char == symbols[i]){
+   	if(current_char == symbols[i] || current_char == symbols[i]-32){
    		current_state = trans_table[i][current_state];
-   	}
-   	else{
-   		current_state = 1;
+   		change_flag = 1;
+   			
    	}
    }
+   if(change_flag == 0){
+   	current_state = 1;
+   }
+  
   	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
   	if(current_state == accepting_state){
   		occurances++;
@@ -95,7 +95,7 @@ int ghetto_grep(char *word, char *file_contents){
     	flag = 1;
 	}
     printf("%c",file_contents[k]);
-  }
+   }
   	
   if(flag == 0){
    	printf("\""); 
@@ -173,6 +173,7 @@ void print_trans_table(){
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
 void construct_trans_table(char *word){
@@ -247,6 +248,7 @@ void construct_trans_table(char *word){
   for (i = 0; i < number_of_symbols-3; i++){
     if (ascii_word[0] == ascii_symbols[i]){
       trans_table[i + 3][0] = 3;
+      trans_table[i + 3][1] = 3;
       trans_table[i + 3][2] = 3;
     }
     else {
@@ -267,6 +269,7 @@ int create_freq_table(char *word){
 	while(word[i] != '\0'){
 		if( 65 <= word[i] && word[i] <= 90 ){
 			alphabet[word[i] + 32]++;
+			word[i] = word[i] + 32;
 		}
 		else{
 			alphabet[word[i]]++;
