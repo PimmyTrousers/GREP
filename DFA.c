@@ -52,9 +52,9 @@ int ghetto_grep(char *word, char *file_contents){
   int accepting_state = number_of_states - 1; // this is correct 
   int symbols[number_of_symbols+3];
 
-  symbols[0] = 46; // 46 = period.
+  symbols[2] = 46; // 46 = period.
   symbols[1] = 44; // 44 = comma.
-  symbols[2] = 32; // 32 = space. 
+  symbols[0] = 32; // 32 = space. 
 
   int counter = 3;
 
@@ -71,12 +71,10 @@ int ghetto_grep(char *word, char *file_contents){
    int change_flag = 0;
    int current_char = file_contents[k];
    
-
    for(i = 0; i < number_of_symbols; i++){
    	if(current_char == symbols[i] || current_char == symbols[i]-32){
    		current_state = trans_table[i][current_state];
    		change_flag = 1;
-   			
    	}
    }
    if(change_flag == 0){
@@ -248,7 +246,6 @@ void construct_trans_table(char *word){
   for (i = 0; i < number_of_symbols-3; i++){
     if (ascii_word[0] == ascii_symbols[i]){
       trans_table[i + 3][0] = 3;
-      trans_table[i + 3][1] = 3;
       trans_table[i + 3][2] = 3;
     }
     else {
