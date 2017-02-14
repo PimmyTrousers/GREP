@@ -56,7 +56,7 @@ int ghetto_grep(char *word, char *file_contents){
 
   symbols[2] = 46; // 46 = period.
   symbols[1] = 44; // 44 = comma.
-  symbols[0] = 32; // 32 = space. 
+  symbols[0] = 32; // 32 = space.
 
   int counter = 3;
 
@@ -125,7 +125,6 @@ int ghetto_grep(char *word, char *file_contents){
 }
 
 int main(int argc, char *argv[]){
-  printf("%sred%s\n", KRED, KNRM);
   /////////////////////////////////////////////////////////////////////////
   /*
      Read in a file by it's name and put contents into an array called:
@@ -156,8 +155,6 @@ int main(int argc, char *argv[]){
   char *word = argv[2]; // this is the special word
   number_of_states = get_word_length(word) + 4;
   number_of_symbols = create_freq_table(word) + 3;
-  printf("states: %d\n", number_of_states);
-  printf("symbols: %d\n", number_of_symbols);
 
   construct_trans_table(word);
   print_trans_table();
