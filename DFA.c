@@ -33,96 +33,19 @@ void construct_trans_table()
 
 */
 
-int get_word_length();
+int get_word_length(char *word);
 
 int get_num_sym();
 
 void print_trans_table();
 
-void construct_trans_table();
+void construct_trans_table(char *word);
 
 int create_freq_table(char *word);
 
-int ghetto_grep(char *word, char *file_contents){
-
-  int flag = 0;
-  int k, i;
-  printf("\"");
-  int current_state = 0;
-  int occurances = 0;
-  int accepting_state = number_of_states - 1; // this is correct
-  int symbols[number_of_symbols+3];
-  int last_print_index = 0;
-
-  symbols[2] = 46; // 46 = period.
-  symbols[1] = 44; // 44 = comma.
-  symbols[0] = 32; // 32 = space.
-
-  int counter = 3;
-
-  for(i = 0; i < 128; i++){
-  	if(alphabet[i] != 0){
-  		symbols[counter] = i;
-  		counter++;
-  	}
-  }
-
-  int word_length = get_word_length(word);
-
-  for(k = 0;k < input_file_size; k++){
-   int change_flag = 0;
-   int current_char = file_contents[k];
-
-   for(i = 0; i < number_of_symbols; i++){
-   	if(current_char == symbols[i] || current_char == symbols[i]-32){
-   		current_state = trans_table[i][current_state];
-   		change_flag = 1;
-   	}
-   }
-   if(change_flag == 0){
-   	current_state = 1;
-   }
-
-   // if we reach the end of the file (\n)
-   if(file_contents[k] == '\n'){
-     printf("\"");
-     flag = 1;
-   }
-
-   //fancy print
-   if(current_state == 3){
-     last_print_index = k;
-   }
-   else if(current_state == accepting_state){
-     printf("%s", KRED);
-     for(i = last_print_index; i <= k; i++){
-       printf("%c",file_contents[i]);
-     }
-     printf("%s", KNRM);
-     last_print_index = k+1;
-   }
-   else if(current_state == 0 || current_state == 1 || current_state == 2){
-     for(i = last_print_index; i <= k; i++){
-       printf("%c",file_contents[i]);
-     }
-     last_print_index = k+1;
-   }
-
-  	// the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
-  	if(current_state == accepting_state){
-  		occurances++;
-  		current_state = 2;
-  	}
+int ghetto_grep(char *word, char *file_contents);
 
 
-   }
-
-  if(flag == 0){
-   	printf("\"");
-  }
-  printf("\n");
-  printf("There were a total of %d occurances\n", occurances);
-}
 
 int main(int argc, char *argv[]){
   /////////////////////////////////////////////////////////////////////////
@@ -302,4 +225,85 @@ int create_freq_table(char *word){
 	}
 
 	return length;
+}
+
+int ghetto_grep(char *word, char *file_contents){
+
+  int flag = 0;
+  int k, i;
+  printf("\"");
+  int current_state = 0;
+  int occurances = 0;
+  int accepting_state = number_of_states - 1; // this is correct
+  int symbols[number_of_symbols+3];
+  int last_print_index = 0;
+
+  symbols[2] = 46; // 46 = period.
+  symbols[1] = 44; // 44 = comma.
+  symbols[0] = 32; // 32 = space. 
+
+  int counter = 3;
+
+  for(i = 0; i < 128; i++){
+    if(alphabet[i] != 0){
+      symbols[counter] = i;
+      counter++;
+    }
+  }
+
+  int word_length = get_word_length(word);
+
+  for(k = 0;k < input_file_size; k++){
+   int change_flag = 0;
+   int current_char = file_contents[k];
+
+   for(i = 0; i < number_of_symbols; i++){
+    if(current_char == symbols[i] || current_char == symbols[i]-32){
+      current_state = trans_table[i][current_state];
+      change_flag = 1;
+    }
+   }
+   if(change_flag == 0){
+    current_state = 1;
+   }
+ 
+   // if we reach the end of the file (\n)
+   if(file_contents[k] == '\n'){
+     printf("\"");
+     flag = 1;
+   }
+
+   //fancy print
+   if(current_state == 3){
+     last_print_index = k;
+   }
+   else if(current_state == accepting_state){
+     printf("%s", KRED);
+     for(i = last_print_index; i <= k; i++){
+       printf("%c",file_contents[i]);
+     }
+     printf("%s", KNRM);
+     last_print_index = k+1;
+   }
+   else if(current_state == 0 || current_state == 1 || current_state == 2){
+     for(i = last_print_index; i <= k; i++){
+       printf("%c",file_contents[i]);
+     }
+     last_print_index = k+1;
+   }
+
+    // the case when we reach our accepting state where I assume that the accepting state is number of states - 1.
+    if(current_state == accepting_state){
+      occurances++;
+      current_state = 2;
+    }
+
+
+   }
+
+  if(flag == 0){
+    printf("\"");
+  }
+  printf("\n");
+  printf("There were a total of %d occurances\n", occurances);
 }
